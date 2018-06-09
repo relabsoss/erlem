@@ -1,0 +1,27 @@
+{application, erlem,
+ [
+  {description, "Erlang IoT application"},
+  {vsn, "0.0.1"},
+  {modules, []},
+  {registered, []},
+  {applications, [
+    kernel,
+    stdlib,
+    inets,
+    sasl,
+    asn1,
+    ssl,
+    public_key,
+    crypto,
+    ranch,
+    cowlib,
+    cowboy
+    ]},
+  {included_applications, [
+    jsx,
+    uart,
+    eralng_ale
+  ]},
+  {mod, { erlem_app, []}},
+  {env, []}
+ ]}.
