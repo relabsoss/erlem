@@ -1,10 +1,10 @@
 -define(MAX_X, 128).
 -define(MAX_Y, 64).
 
--define(PAGE_MODE, 01).
--define(HORIZONTAL_MODE, 02).
+-define(PAGE_MODE, 16#01).
+-define(HORIZONTAL_MODE, 16#02).
 
--define(ADDRESS, 16#3c).
+-define(ADDRESS, 16#3C).
 -define(DELAY, 5).
 -define(COMMAND_MODE, 16#80).
 -define(DATA_MODE, 16#40).
@@ -17,17 +17,17 @@
 -define(DECTIVATE_SCROLL_CMD, 16#2E).
 -define(SET_BRIGHTNESS_CMD, 16#81).
 
--define(SCROLL_LEFT_CMD, 16#26).
+-define(SCROLL_LEFT_CMD,  16#26).
 -define(SCROLL_RIGHT_CMD, 16#27).
 
--define(SCROLL_2FRAMES, 16#7).
--define(SCROLL_3FRAMES, 16#4).
--define(SCROLL_4FRAMES, 16#5).
--define(SCROLL_5FRAMES, 16#0).
--define(SCROLL_25FRAMES, 16#6).
--define(SCROLL_64FRAMES, 16#1).
--define(SCROLL_128FRAMES, 16#2).
--define(SCROLL_256FRAMES, 16#3).
+-define(SCROLL_2FRAMES,   16#07).
+-define(SCROLL_3FRAMES,   16#04).
+-define(SCROLL_4FRAMES,   16#05).
+-define(SCROLL_5FRAMES,   16#00).
+-define(SCROLL_25FRAMES,  16#06).
+-define(SCROLL_64FRAMES,  16#01).
+-define(SCROLL_128FRAMES, 16#02).
+-define(SCROLL_256FRAMES, 16#03).
 
 -define(FONT, [
   <<16#00,16#00,16#00,16#00,16#00,16#00,16#00,16#00>>,

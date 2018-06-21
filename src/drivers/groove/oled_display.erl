@@ -36,7 +36,8 @@ handle_cast({Cmd, Params}, State) ->
 handle_cast(_Msg, State) -> 
   {noreply, State}.
 
-handle_info(_Info, State) -> 
+handle_info(Info, State) -> 
+  ?DEBUG("INFO: ~p", [Info]),
   {noreply, State}.
 
 terminate(_Reason, _State) -> 
@@ -53,9 +54,11 @@ init_device(#{ bus := Bus } = Params) ->
   {ok, P} = i2c:start_link(Bus, ?ADDRESS),
   cmd(P, ?DISPLAY_OFF_CMD),
   timer:sleep(?DELAY),
+  clear(P),
   cmd(P, ?DISPLAY_ON_CMD),
   timer:sleep(?DELAY),
-  cmd(P, ?NORMAL_DISPLAY_CMD),
+  mode(P, horizontal),
+  mode(P, normal),
   #{
     proc => P,
     mode => none,
@@ -89,12 +92,14 @@ process(_, _, State) ->
 
 
 cmd(P, Cmd) when is_integer(Cmd) ->
-  cmd(P, integer_to_binary(Cmd));
+  cmd(P, <<Cmd/integer>>);
 cmd(P, Cmd) when is_binary(Cmd) ->
-  i2c:write(P, <<?COMMAND_MODE, Cmd/binary>>).
+  ok = i2c:write(P, <<?COMMAND_MODE, Cmd/binary>>).
 
+data(_P, <<>>) ->
+  ok;
 data(P, Data) ->
-  [i2c:write(P, <<?DATA_MODE, D/integer>>) || <<D:8>> <= Data].
+  ok = i2c:write(P, <<?DATA_MODE, Data/binary>>).
 
 pos(P, X, Y) ->
   cmd(P, 16#B0 + Y),
@@ -102,19 +107,16 @@ pos(P, X, Y) ->
   cmd(P, 16#10 + ((8 * X bsr 4) band 16#0F)).
 
 brightness(P, Value) ->
-  cmd(P, ?SET_BRIGHTNESS_CMD),
-  cmd(P, Value).
+  cmd(P, <<?SET_BRIGHTNESS_CMD, Value/integer>>).
 
 mode(P, normal) ->
   cmd(P, ?NORMAL_DISPLAY_CMD);
 mode(P, invert) ->
   cmd(P, ?INVERSE_DISPLAY_CMD);
 mode(P, horizontal) ->
-  cmd(P, 16#20),
-  cmd(P, 16#00);
+  cmd(P, <<16#20, 16#00>>);
 mode(P, page) ->
-  cmd(P, 16#20),
-  cmd(P, 16#02).  
+  cmd(P, <<16#20, 16#02>>).  
 
 scroll(P, {activate, Direction, StartPage, EndPage, Speed}) ->
   D = case Direction of
@@ -131,13 +133,7 @@ scroll(P, {activate, Direction, StartPage, EndPage, Speed}) ->
     256 -> ?SCROLL_256FRAMES;
     _ -> ?SCROLL_2FRAMES
   end,
-  cmd(P, D),
-  cmd(P, 16#00),
-  cmd(P, StartPage),
-  cmd(P, Sp),
-  cmd(P, EndPage),
-  cmd(P, 16#00),
-  cmd(P, 16#FF),
+  cmd(P, <<D/integer, 16#00, StartPage/integer, Sp/integer, EndPage/integer, 16#00, 16#FF>>),
   timer:sleep(?DELAY),
   cmd(P, ?ACTIVATE_SCROLL_CMD);
 scroll(P, deactivate) ->
@@ -146,16 +142,18 @@ scroll(P, deactivate) ->
 string(P, Str) ->
   [char(P, I) || I <- Str].
 
-char(P, Chr) when (Chr > 32) and (Chr < 127) ->
-  data(P, lists:nth(Chr, ?FONT));
-char(P, _) ->
-  char(P, ' ').
+char(P, Chr) ->
+  Pos = case (Chr > 31) and (Chr < 128) of
+    true -> Chr;
+    false -> ' '
+  end,
+  data(P, lists:nth(Pos - 31, ?FONT)).
 
 clear(P) ->
   cmd(P, ?DISPLAY_OFF_CMD),
   lists:map(fun(J) ->
-      pos(P, J, 0),
-      string(P, lists:concat(lists:duplicate(16, " ")))
+      pos(P, 0, J),
+      string(P, lists:concat(lists:duplicate(16, ' ')))
     end, lists:seq(0, 7, 1)),
   cmd(P, ?DISPLAY_ON_CMD),
   pos(P, 0, 0).
