@@ -2,7 +2,7 @@
 -behaviour(gen_server).
 
 -export([
-          command/1,
+          p/1,
           start_link/1, 
           init/1, 
           handle_call/3, 
@@ -15,7 +15,7 @@
 -include("erlem.hrl").
 -include("drivers/oled_display.hrl").
 
-command(Cmd) ->
+p(Cmd) ->
   gen_server:cast(?MODULE, Cmd).
 
 start_link(Params) -> 
@@ -37,7 +37,6 @@ handle_cast(_Msg, State) ->
   {noreply, State}.
 
 handle_info(Info, State) -> 
-  ?DEBUG("INFO: ~p", [Info]),
   {noreply, State}.
 
 terminate(_Reason, _State) -> 
