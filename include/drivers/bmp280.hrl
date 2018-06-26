@@ -1,15 +1,14 @@
 -define(ADDRESS, 16#76).
 
 -define(REG_CONTROL, 16#F4).
--define(REG_RESULT_PRESSURE, 16#F7).     
--define(REG_RESULT_TEMPRERATURE, 16#FA).
+-define(REG_RESULT, 16#F7).     
 
--define(COMMAND_TEMPERATURE, 16#2E).
--define(COMMAND_PRESSURE0, 16#25).        
--define(COMMAND_PRESSURE1, 16#29).       
--define(COMMAND_PRESSURE2, 16#2D).    
--define(COMMAND_PRESSURE3, 16#31).    
--define(COMMAND_PRESSURE4, 16#5D).
+-define(READ_CMD, 16#3F).
+
+-define(MODE_ULTRALOWPOWER, 0).
+-define(MODE_STANDART, 1).
+-define(MODE_HIRES, 2).
+-define(MODE_ULTRAHIRES, 3).
 
 -define(CAL_T, [
     {uint, 16#88},

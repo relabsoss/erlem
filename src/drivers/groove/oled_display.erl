@@ -3,6 +3,7 @@
 
 -export([
           p/1,
+          test/0,
           start_link/1, 
           init/1, 
           handle_call/3, 
@@ -17,6 +18,22 @@
 
 p(Cmd) ->
   gen_server:cast(?MODULE, Cmd).
+
+
+test() ->
+  start_link(#{ bus => "i2c-0" }),
+  p({text, {0, 0, "0123456789"}}),
+  p({text, {1, 1, "0123456789"}}),
+  p({text, {2, 2, "0123456789"}}),
+  p({text, {3, 3, "0123456789"}}),
+  p({text, {4, 4, "0123456789"}}),
+  p({mode, invert}),
+  timer:sleep(3000),
+  p({text, {0, 5, "QWERTYUIOP[]"}}),
+  p({text, {0, 6, "ASDFGHJKL;'"}}),
+  p({text, {0, 7, "ZXCVBNM<>?"}}),
+  p({mode, normal}).
+
 
 start_link(Params) -> 
   gen_server:start_link({local, ?MODULE}, ?MODULE, Params, []).
@@ -36,7 +53,7 @@ handle_cast({Cmd, Params}, State) ->
 handle_cast(_Msg, State) -> 
   {noreply, State}.
 
-handle_info(Info, State) -> 
+handle_info(_Info, State) -> 
   {noreply, State}.
 
 terminate(_Reason, _State) -> 
