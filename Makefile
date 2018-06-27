@@ -19,3 +19,6 @@ clean: $(REBAR)
 run: $(REBAR)
 	$(REBAR) shell +pc unicode --config config/config.sys --sname $(APPNAME)@localhost
 
+release: $(REBAR) clean
+	./crosscompile.sh
+	./release.sh

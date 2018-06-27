@@ -20,6 +20,7 @@
   {included_applications, [
     jsx,
     uart,
+    erlexec,
     eralng_ale
   ]},
   {mod, { erlem_app, []}},
