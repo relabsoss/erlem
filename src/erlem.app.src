@@ -8,11 +8,10 @@
     kernel,
     stdlib,
     inets,
-    sasl,
-    asn1,
-    ssl,
-    public_key,
     crypto,
+    asn1,
+    public_key,
+    ssl,
     ranch,
     cowlib,
     cowboy
@@ -20,8 +19,8 @@
   {included_applications, [
     jsx,
     uart,
-    erlexec,
-    eralng_ale
+    erlang_ale,
+    erlexec
   ]},
   {mod, { erlem_app, []}},
   {env, []}

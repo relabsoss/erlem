@@ -161,7 +161,7 @@ string(P, Str) ->
 char(P, Chr) ->
   Pos = case (Chr > 31) and (Chr < 128) of
     true -> Chr;
-    false -> ' '
+    false -> $ 
   end,
   data(P, lists:nth(Pos - 31, ?FONT)).
 

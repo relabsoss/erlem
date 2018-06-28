@@ -51,16 +51,18 @@ code_change(_OldVsn, State, _Extra) ->
 show() ->
   #{ t := T, p := P } = bmp280:values(),
   {Lat, Lng, Time} = case uart_gps:values() of
+    #{ lat := Lt, lng := Ln, time := undefined } ->
+      {Lt, Ln, [0, 0, 0]};
     #{ lat := Lt, lng := Ln, time := Tm } ->
       {Lt, Ln, Tm};
-    undefined ->
+    _ ->
       {0.0, 0.0, [0, 0, 0]}
   end,
-  oled_display:p({text, {0, 0, format("Temp ~*.*.*f", [9, 2, ' ', T])}}),
-  oled_display:p({text, {0, 1, format("Pres ~*.*.*f", [9, 2, ' ', P])}}),
-  oled_display:p({text, {0, 2, format("Lat  ~*.*.*f", [9, 5, ' ', Lat])}}),
-  oled_display:p({text, {0, 3, format("Lng  ~*.*.*f", [9, 5, ' ', Lng])}}),
-  oled_display:p({text, {0, 4, format("Time ~2.10B:~2.10B:~2.10B", Time)}}).
+  oled_display:p({text, {0, 1, format("Temp ~*.*.*f", [11, 2, $  , T])}}),
+  oled_display:p({text, {0, 2, format("Pres ~*.*.*f", [11, 2, $  , P])}}),
+  oled_display:p({text, {0, 3, format("Lat  ~*.*.*f", [11, 5, $  , Lat])}}),
+  oled_display:p({text, {0, 4, format("Lng  ~*.*.*f", [11, 5, $  , Lng])}}),
+  oled_display:p({text, {0, 5, format("Time    ~2.10.0B:~2.10.0B:~2.10.0B", Time)}}).
 
 format(F, V) ->
-  lists:concat(io_lib:format(F, V)).
+  lists:flatten(io_lib:format(F, V)).
